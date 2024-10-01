@@ -1,0 +1,50 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: ./docker/php/Dockerfile
+    restart: unless-stopped
+    volumes:
+      - .:/var/www/html
+      - ./docker/php/php.ini:/usr/local/etc/php/php.ini
+    depends_on:
+      - postgres
+    networks:
+      - app-network
+
+  nginx:
+    build:
+      context: .
+      dockerfile: ./docker/nginx/Dockerfile
+    restart: unless-stopped
+    ports:
+      - '8080:80'
+    volumes:
+      - .:/var/www/html
+    depends_on:
+      - app
+    networks:
+      - app-network
+    environment:
+      - APP_ENV=${APP_ENV}
+
+  postgres:
+    image: postgres:16
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_DBNAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    networks:
+      - app-network
+    ports:
+      - "5432:5432"
+
+volumes:
+  db-data:
+
+networks:
+  app-network:
+    driver: bridge

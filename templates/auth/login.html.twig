@@ -1,0 +1,21 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Вход{% endblock %}
+
+{% block body %}
+    <h1>Вход в систему</h1>
+
+    {% if error %}
+        <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+    {% endif %}
+
+    <form action="{{ path('app_login') }}" method="post">
+        <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+
+        <div>
+            <label for="username">Имя пользователя:</label>
+            <input type="text" id="username" name="username" value="{{ last_username }}" required autofocus minlength="3" maxlength="180" pattern="[A-Za-z0-9_-]+">
+        </div>
+        <button class="btn btn-success mt-3" type="submit">Войти</button>
+    </form>
+{% endblock %}

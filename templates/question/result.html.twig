@@ -1,0 +1,38 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Результаты Теста{% endblock %}
+
+{% block body %}
+    <h1>Результаты Теста</h1>
+
+    <p>Имя пользователя: <strong>{{ username }}</strong></p>
+    <p>Дата прохождения: <strong>{{ testTakenAt|date('d.m.Y H:i') }}</strong></p>
+
+    {% for questionResult in questionsData %}
+        <h2>{{ questionResult.question.getText() }}</h2>
+
+        {% if questionResult.isCorrect %}
+            <p><strong style="color: green;">Верно.</strong></p>
+        {% else %}
+            <p><strong style="color: red;">Не верно.</strong></p>
+        {% endif %}
+
+        <ul>
+            {% for answerResult in questionResult.answers %}
+                <li>
+                    {{ answerResult.answerVariant.getVariant() }}
+                    {% if questionResult.isCorrect and answerResult.isCorrect and answerResult.isSelected %}
+                        <span style="color: green;">&#10003;</span>
+                    {% elseif not questionResult.isCorrect and answerResult.isCorrect %}
+                        <span style="color: green;">&#10003; Правильный</span>
+                    {% elseif answerResult.isSelected %}
+                        <span style="color: red;">&#10007;</span>
+                    {% endif %}
+
+                </li>
+            {% endfor %}
+        </ul>
+    {% endfor %}
+
+    <a href="{{ path('question.start') }}" class="btn btn-primary mt-3">Начать новый тест</a>
+{% endblock %}
